@@ -1,4 +1,7 @@
 import React,{Component} from "react";
+import Button from "./button";
+import {connect} from "react-redux";
+import {getpopularitems,updatelikes} from "../redux/actions/items";
 
 class ItemsList extends Component {
 
@@ -6,7 +9,7 @@ class ItemsList extends Component {
         super();
         this.state={
             items:[]
-        }
+        };
     }
     render(){
         return (
@@ -14,115 +17,65 @@ class ItemsList extends Component {
                 <h3>items list:</h3>
                 {
                     this.state.items.map((itm,ii)=>(
-                        <div key={ii}>
-                            <span>{itm.caption +" - " +itm.description+" - "+ itm.likes}</span>
+                        <div style={styles.itmStyle} className="itm" key={ii} data-id={itm.id}>
+                            <span>{itm.caption +" - " +itm.description+" - "}</span>
+                            <Button caption={itm.likes} withBorder="1" activateProperFunctionBoy={(event)=>{this.plusOne(event)}}/>
                         </div>
                     ))
                 }
             </div>
         )
     }
+    plusOne(e){
+        const elm=e.target;
+        const id=elm.closest(".itm").getAttribute("data-id");
+        
+        /* the registered user should be allowed to vote, so the localstorage mechanism is pretty useless ? not sure*/
+/*
+        if (localStorage.getItem("likes-"+id)==="1")return;
+        localStorage.setItem("likes-"+id,"1");
+  */      
+        const database = firebase.database();
+        //actually, you don't need here to reload the data. all you need is to add one to the likes
+//        e.target.innerHTML=parseInt(e.target.innerHTML,10)+1;
+        this.props.updatelikes(id,parseInt(elm.innerHTML,10)+1);
+    }
     componentDidMount(){
-/*        
-        const firebaseItems = {
-            items:{
-                bla1:{
-                    username:"shay1",
-                    caption:"dive with sharks1",
-                    description:"this hsould befantastic1",
-                    likes:100
-                },
-                bla2:{
-                    username:"shay2",
-                    caption:"dive with sharks2",
-                    description:"this hsould befantastic2",
-                    likes:200
-                }
-                
-            }
-        }
-        const items = [
-            {
-                username:"shay1",
-                caption:"dive with sharks1",
-                description:"this hsould befantastic1",
-                likes:100
-            },
-            {
-                username:"shay2",
-                caption:"dive with sharks2",
-                description:"this hsould befantastic2",
-                likes:100
-            },
-            {
-                username:"shay3",
-                caption:"dive with sharks3",
-                description:"this hsould befantastic3",
-                likes:100
-            },
-            {
-                username:"shay4",
-                caption:"dive with sharks4",
-                description:"this hsould befantastic4",
-                likes:100
-            }
-        ]
-        const database = firebase.database();
-        database.ref().set(items);
-*/
-/*
-        database.ref().once("value")
-        .then((snapshot)=>{
-            this.setState({
-                doc:"111"
-            })
-        })
-        .catch((err)=>{
-            console.log ("there was an error, sorry. the err is - ",err);
-        });
-*/
-/*
-        database.ref("items").push({
-            username:"shay2",
-            caption:"dive with sharks2",
-            description:"this hsould befantastic2",
-            likes:200,
-        })
-
-        database.ref("items").on("child_removed",(snapshot)=>{
-            console.log(snapshot.key,snapshot.val());
-        });
-        database.ref("items").on("child_changed",(snapshot)=>{
-            console.log(snapshot.key,snapshot.val());
-        });
-        database.ref("items").on("child_added",(snapshot)=>{
-            console.log(snapshot.key,snapshot.val());
-        });
-*/
-        const database = firebase.database();
-        database.ref("items").once("value")
-        .then((snapshot)=>{
-            let items=[];
-            snapshot.forEach((childsnapshot)=>{
-                items.push(
-                    {
-                        id:childsnapshot.key,
-                        ...childsnapshot.val()
-                    }                    
-                );
-            });
-
-            this.setState({
-                items:items
-            })
-            console.log(items);
-        })
-        .catch((err)=>{
-            console.log ("there was an error, sorry. the err is - ",err);
-        });
-
+        this.props.getpopularitems();
+    }
+    componentWillReceiveProps(newProps){
+        this.setState({items:newProps.items});
     }
 
 };
 
-export default ItemsList;
+const styles={
+    itmStyle:{
+        display:"flex",
+        alignItems:"center",
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        items:state.items
+/*
+        NodesManager: state.items,
+        hasErrored: state.itemsHasErrored,
+        isLoading: state.itemsIsLoading,
+        selectedID:state.nodeSelection,
+        treeHasChanged:state.treeHasChanged,
+*/
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        getpopularitems: () => dispatch(getpopularitems()),
+        updatelikes:(id,likes)=>dispatch(updatelikes(id,likes)),
+    };
+};
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(ItemsList);
+//export default ItemsList;
