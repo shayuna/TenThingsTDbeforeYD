@@ -1,6 +1,5 @@
 
 const initialState = {
-    currentList:null,
 }
 
 const itemsReducer = (state=initialState,action) => {
@@ -8,7 +7,6 @@ const itemsReducer = (state=initialState,action) => {
         case "GET_ITEMS_SUCCESS":
             let objToRet={
                 ...state,
-                currentList:action.tag
             };
             objToRet[action.tag]=action.items;
             return objToRet;

@@ -8,7 +8,7 @@ class ItemsList extends Component {
     constructor(){
         super();
         this.state={
-            items:{}
+            currentList:null
         };
     }
     render(){
@@ -16,7 +16,7 @@ class ItemsList extends Component {
             <div>
                 <h3>items list:</h3>
                 {
-                    this.state.items.currentList && this.state.items[this.state.items.currentList].map((itm,ii)=>(
+                    this.state.currentList && this.props.items[this.state.currentList].map((itm,ii)=>(
                         <article style={styles.itmStyle} className="itm" key={ii} data-id={itm.id}>
                             <span>{"itm.caption" +" - " +itm.description+" - "}</span>
                             <Button caption={itm.username} withBorder="1" activateProperFunctionBoy={(event)=>{this.getList("username",itm.username)}}/>
@@ -84,16 +84,14 @@ class ItemsList extends Component {
         const id=valToMatch ? valToMatch : filter;
         if (!this.props.items[id]){
             console.log("going to db");
+            this.state.currentList=id;
             this.props.getitems(filter,valToMatch);
         }
         else{
             console.log("not going to db");
             this.setState({
-                items:{
-                        ...this.props.items,
-                        currentList:id
-                },
-            })
+                currentList:id,
+            });
         }
         
     }
@@ -102,7 +100,7 @@ class ItemsList extends Component {
     }
     componentWillReceiveProps(newProps){
 //        console.log ("current list is - "+newProps.items.currentList);
-        this.setState({items:newProps.items});
+        this.setState();
     }
 
 };
