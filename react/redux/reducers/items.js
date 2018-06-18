@@ -1,12 +1,31 @@
-const itemsReducer = (state=[],action) => {
+
+const initialState = {
+    currentList:null,
+}
+
+const itemsReducer = (state=initialState,action) => {
     switch (action.type){
-        case "GET_POPULAR_ITEMS_SUCCESS":
-            return action.items;
+        case "GET_ITEMS_SUCCESS":
+            let objToRet={
+                ...state,
+                currentList:action.tag
+            };
+            objToRet[action.tag]=action.items;
+            return objToRet;
         case "UPDATE_LIKES_SUCCESS":
-            return state.map((itm,ii)=>{
-                if (itm.id===action.id)itm.likes++;
-                return itm;
-            })
+            let objToRet1={
+                ...state,
+            };
+            for (const prop in objToRet1){
+                if (Array.isArray(objToRet1[prop])){
+                    objToRet1[prop].forEach((itm,ii)=>{
+                        if (itm.id===action.id){
+                            itm.likes++;
+                        }
+                    })
+                }
+            };
+            return objToRet1;
         default:
             return[];
         }

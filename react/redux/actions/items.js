@@ -3,9 +3,10 @@ export const getlist = (type="",id="")=>({
     id
 });
 
-export const getpopularitems_success = (items)=>({
-    type:"GET_POPULAR_ITEMS_SUCCESS",
-    items
+export const getitems_success = (items,tag)=>({
+    type:"GET_ITEMS_SUCCESS",
+    items,
+    tag
 })
 
 export const updatelikes_success = (id)=>({
@@ -24,10 +25,16 @@ export const updatelikes = (id,likes)=>{
     };
 }
 
-export function getpopularitems() {
+export function getitems(filter,valToMatch) {
     return (dispatch) => {
         const database = firebase.database();
-        database.ref("items").once("value")
+        let query=null;
+        if (valToMatch){
+            query=database.ref("items").orderByChild(filter).equalTo(valToMatch).limitToLast(10);
+        }else{
+            query=database.ref("items").orderByChild(filter).limitToLast(10);
+        }
+        query.once("value")
         .then((snapshot)=>{
             let items=[];
             snapshot.forEach((childsnapshot)=>{
@@ -38,7 +45,7 @@ export function getpopularitems() {
                     }                    
                 );
             });
-            return dispatch(getpopularitems_success(items));
+            return dispatch(getitems_success(items,valToMatch ? valToMatch : filter));
         })
         .catch((err)=>{
             console.log ("error in loading data. err is - ",err);
