@@ -9,6 +9,10 @@ export const getitems_success = (items,tag)=>({
     tag
 })
 
+export const clearitems = ()=>({
+    type:"CLEAR_ITEMS",
+})
+
 export const updatelikes_success = (id)=>({
     type:"UPDATE_LIKES_SUCCESS",
     id,

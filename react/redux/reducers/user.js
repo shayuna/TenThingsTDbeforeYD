@@ -1,14 +1,18 @@
 
 const initialState = {
-    user:null,
+    name:"",
 }
 
-const userReducer = (state=initialState,action) => {
-    switch (action.type){
+const userReducer = (state=initialState,{type,name,id}) => {
+    switch (type){
         case "SET_USER":
-            return action.name;
+            return {
+                ...state,
+                name,
+                id,
+            };
         default:
-            return null;
+            return state;
     }
 }
 

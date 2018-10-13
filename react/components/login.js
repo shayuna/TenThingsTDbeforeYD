@@ -20,7 +20,7 @@ class Login extends Component {
     validate(){
         let retVal=true;   
         if (document.getElementById("username").value.trim()===""){
-            alert ("you should enter, punk");
+            alert ("you should enter a name, punk");
             document.getElementById("username").focus();
             retVal=false;
         }
@@ -39,7 +39,7 @@ class Login extends Component {
         .then((snapshot)=>{
             if (snapshot.val() && Object.keys(snapshot.val()).length>0){
                 if (snapshot.val()[Object.keys(snapshot.val())].pwd===document.getElementById("pwd").value){
-                    this.props.setUser(document.getElementById("username").value);
+                    this.props.setUser(document.getElementById("username").value,Object.keys(snapshot.val())[0]);
                     this.props.switchToMain();
                 }
                 else{
@@ -78,7 +78,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setUser:(name)=>dispatch(setUser(name)),
+        setUser:(name,id)=>dispatch(setUser(name,id)),
     }
 }
 

@@ -62,9 +62,8 @@ class Register extends Component {
             username:document.getElementById("username").value,
             pwd:document.getElementById("pwd").value,
         })
-        .then(()=>{
-            console.log("added new user to db");
-            this.props.setUser(document.getElementById("username").value);
+        .then((oKey)=>{
+            this.props.setUser(document.getElementById("username").value,oKey.key);
             this.props.switchToMain();
         })
         .catch((err)=>{
@@ -98,7 +97,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setUser:(name)=>dispatch(setUser(name)),
+        setUser:(name,id)=>dispatch(setUser(name,id)),
     }
 }
 

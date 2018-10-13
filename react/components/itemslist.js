@@ -1,7 +1,7 @@
 import React,{Component} from "react";
 import Button from "./button";
 import {connect} from "react-redux";
-import {getitems,updatelikes} from "../redux/actions/items";
+import {getitems,updatelikes,clearitems} from "../redux/actions/items";
 
 class ItemsList extends Component {
 
@@ -16,11 +16,13 @@ class ItemsList extends Component {
             <div>
                 <h3>items list:</h3>
                 {
-                    this.state.currentList && this.props.items[this.state.currentList].map((itm,ii)=>(
+                    this.state.currentList && this.props.items[this.state.currentList] && this.props.items[this.state.currentList].map((itm,ii)=>(
                         <article style={styles.itmStyle} className="itm" key={ii} data-id={itm.id}>
-                            <span>{"itm.caption" +" - " +itm.description+" - "}</span>
+                            <span>{itm.caption +" - " +itm.description+" - "}</span>
                             <Button caption={itm.username} withBorder="1" activateProperFunctionBoy={(event)=>{this.getList("username",itm.username)}}/>
                             <Button caption={itm.likes} withBorder="1" activateProperFunctionBoy={(event)=>{this.plusOne(event)}}/>
+                            {itm.userid===this.props.user.id && <Button caption="Edit" withBorder="1" activateProperFunctionBoy={()=>this.editItem(itm.id,itm.caption,itm.description)}/>}
+                            {itm.userid===this.props.user.id && <Button caption="Del" withBorder="1" activateProperFunctionBoy={()=>this.delItem(itm.id)}/>}
                         </article>
                     ))
                 }
@@ -102,7 +104,21 @@ class ItemsList extends Component {
 //        console.log ("current list is - "+newProps.items.currentList);
         this.setState();
     }
-
+    editItem(sID,sCaption,sDescription){
+        this.props.editItem(sID,sCaption,sDescription);
+    }
+    delItem(sID){
+        const database = firebase.database();
+        database.ref("items/"+sID)
+        .remove()
+        .then(()=>{
+            this.props.clearItems();//by this we are forcing the itemslist component to update from db
+            this.getList(this.state.currentList);
+        })
+        .catch((err)=>{
+            alert ("an error was detected in del item. err is - "+err);
+        })
+    }
 };
 
 const styles={
@@ -115,6 +131,7 @@ const styles={
 const mapStateToProps = (state) => {
     return {
         items:state.items,
+        user:state.user,
         /*
         NodesManager: state.items,
         hasErrored: state.itemsHasErrored,
@@ -129,9 +146,9 @@ const mapDispatchToProps = (dispatch) => {
     return {
         getitems: (filter,valToMatch) => dispatch(getitems(filter,valToMatch)),
         updatelikes:(id,likes)=>dispatch(updatelikes(id,likes)),
+        clearItems:()=>dispatch(clearitems()),
     };
 };
-
 
 export default connect(mapStateToProps, mapDispatchToProps)(ItemsList);
 //export default ItemsList;

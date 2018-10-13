@@ -4,6 +4,8 @@ const initialState = {
 
 const itemsReducer = (state=initialState,action) => {
     switch (action.type){
+        case "CLEAR_ITEMS":
+            return {};
         case "GET_ITEMS_SUCCESS":
             let objToRet={
                 ...state,
@@ -25,7 +27,7 @@ const itemsReducer = (state=initialState,action) => {
             };
             return objToRet1;
         default:
-            return[];
+            return state;
         }
 }
 
