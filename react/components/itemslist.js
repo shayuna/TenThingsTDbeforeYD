@@ -1,7 +1,8 @@
 import React,{Component} from "react";
 import Button from "./button";
 import {connect} from "react-redux";
-import {getitems,updatelikes,clearitems} from "../redux/actions/items";
+import {getitems,updatelikes_success,clearitems} from "../redux/actions/items";
+import {updatelikesinuser_success} from "../redux/actions/user";
 
 class ItemsList extends Component {
 
@@ -41,7 +42,38 @@ class ItemsList extends Component {
   */      
         //actually, you don't need here to reload the data. all you need is to add one to the likes
 //        e.target.innerHTML=parseInt(e.target.innerHTML,10)+1;
-        this.props.updatelikes(id,parseInt(elm.innerHTML,10)+1);
+// 15/10/2018 - one more thing. since the updatelikes has to update both users and items stores,
+// we should perform the actual db update in a neutral place, aka here.
+
+//        this.props.updatelikes(id,parseInt(elm.innerHTML,10)+1);
+        this.updatelikes(id,parseInt(elm.innerHTML,10)+1);
+        
+    }
+    updatelikes(sID,iLikes){
+//        alert (sId+" *** "+iLikes+" *** "+this.props.user.id);
+        const database = firebase.database(),sUID=this.props.user.id;
+        database.ref("items/"+sID).update({
+            likes:iLikes
+        })
+        .then(()=>{
+            database.ref("users/"+sUID+"/likes").push({
+                "itemID":sID
+            })
+            .then(()=>{
+                  this.props.updatelikes_success(sID);
+                  this.props.updatelikesinuser_success(sID);
+    //            return dispatch(updatelikes_success(id));
+            })
+            .catch((err)=>{
+                alert ("something went wrong when updating user. err is - "+err);
+            });
+
+//            return dispatch(updatelikes_success(id));
+        })
+        .catch((err)=>{
+            alert ("something went wrong when updating likes on item. err is - "+err);
+        });
+
     }
     getpopular(){
         this.getList("likes");
@@ -145,7 +177,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getitems: (filter,valToMatch) => dispatch(getitems(filter,valToMatch)),
-        updatelikes:(id,likes)=>dispatch(updatelikes(id,likes)),
+        updatelikesinuser_success:(id)=>dispatch(updatelikesinuser_success(id)),
+        updatelikes_success:(id)=>dispatch(updatelikes_success(id)),
         clearItems:()=>dispatch(clearitems()),
     };
 };

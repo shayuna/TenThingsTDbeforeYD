@@ -12,11 +12,7 @@ export const getitems_success = (items,tag)=>({
 export const clearitems = ()=>({
     type:"CLEAR_ITEMS",
 })
-
-export const updatelikes_success = (id)=>({
-    type:"UPDATE_LIKES_SUCCESS",
-    id,
-});
+/*
 
 export const updatelikes = (id,likes)=>{
     return (dispatch) => {
@@ -28,6 +24,11 @@ export const updatelikes = (id,likes)=>{
         });
     };
 }
+*/
+export const updatelikes_success = (id)=>({
+    type:"UPDATE_LIKES_SUCCESS",
+    id,
+});
 
 export function getitems(filter,valToMatch) {
     return (dispatch) => {
