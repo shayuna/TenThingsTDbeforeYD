@@ -1,10 +1,12 @@
-export const setUser = (name,id)=>({
+export const setUser = (name,id,likes)=>({
     type:"SET_USER",
     name,
-    id
+    id,
+    likes
 });
 
-export const updatelikesinuser_success = (itemId)=>({
-    type:"UPDATE_LIKES_IN_USER_SUCCESS",
-    itemId
-});
+export const updatelikesinuser = (itemId,operation)=>({
+    type:"UPDATE_LIKES_IN_USER",
+    itemId,
+    operation
+})

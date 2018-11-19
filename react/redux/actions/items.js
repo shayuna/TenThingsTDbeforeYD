@@ -25,9 +25,10 @@ export const updatelikes = (id,likes)=>{
     };
 }
 */
-export const updatelikes_success = (id)=>({
-    type:"UPDATE_LIKES_SUCCESS",
+export const updatelikes = (id,vl)=>({
+    type:"UPDATE_LIKES",
     id,
+    vl
 });
 
 export function getitems(filter,valToMatch) {

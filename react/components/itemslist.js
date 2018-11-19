@@ -1,11 +1,10 @@
 import React,{Component} from "react";
 import Button from "./button";
 import {connect} from "react-redux";
-import {getitems,updatelikes_success,clearitems} from "../redux/actions/items";
-import {updatelikesinuser_success} from "../redux/actions/user";
+import {getitems,updatelikes,clearitems} from "../redux/actions/items";
+import {updatelikesinuser} from "../redux/actions/user";
 
 class ItemsList extends Component {
-
     constructor(){
         super();
         this.state={
@@ -21,7 +20,7 @@ class ItemsList extends Component {
                         <article style={styles.itmStyle} className="itm" key={ii} data-id={itm.id}>
                             <span>{itm.caption +" - " +itm.description+" - "}</span>
                             <Button caption={itm.username} withBorder="1" activateProperFunctionBoy={(event)=>{this.getList("username",itm.username)}}/>
-                            <Button caption={itm.likes} withBorder="1" activateProperFunctionBoy={(event)=>{this.plusOne(event)}}/>
+                            <Button caption={itm.likes} withBorder="1" activateProperFunctionBoy={(event)=>{/*this.plusOne(event)*/this.updatelikes_new(event)}}/>
                             {itm.userid===this.props.user.id && <Button caption="Edit" withBorder="1" activateProperFunctionBoy={()=>this.editItem(itm.id,itm.caption,itm.description)}/>}
                             {itm.userid===this.props.user.id && <Button caption="Del" withBorder="1" activateProperFunctionBoy={()=>this.delItem(itm.id)}/>}
                         </article>
@@ -31,6 +30,7 @@ class ItemsList extends Component {
             </div>
         )
     }
+
     plusOne(e){
         const elm=e.target;
         const id=elm.closest(".itm").getAttribute("data-id");
@@ -48,6 +48,18 @@ class ItemsList extends Component {
 //        this.props.updatelikes(id,parseInt(elm.innerHTML,10)+1);
         this.updatelikes(id,parseInt(elm.innerHTML,10)+1);
         
+    }
+    updatelikes_new(e){
+        const sUserID=this.props.user.id;
+        const sItemID=e.target.closest(".itm").getAttribute("data-id");
+        const iLikes=parseInt(e.target.innerHTML,10);
+        if (sUserID){
+            const bExists = this.props.user.likes.reduce((bExists1,val)=>{
+                return bExists1 || val===sItemID;
+            },false);
+            this.props.updatelikesinuser(sItemID,bExists ? "REMOVE" : "ADD");
+            this.props.updatelikes(sItemID,bExists ? -1 : 1);
+        }
     }
     updatelikes(sID,iLikes){
 //        alert (sId+" *** "+iLikes+" *** "+this.props.user.id);
@@ -177,8 +189,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         getitems: (filter,valToMatch) => dispatch(getitems(filter,valToMatch)),
-        updatelikesinuser_success:(id)=>dispatch(updatelikesinuser_success(id)),
-        updatelikes_success:(id)=>dispatch(updatelikes_success(id)),
+        updatelikesinuser:(id,operation)=>dispatch(updatelikesinuser(id,operation)),
+        updatelikes:(id,vl)=>dispatch(updatelikes(id,vl)),
         clearItems:()=>dispatch(clearitems()),
     };
 };

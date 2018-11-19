@@ -39,7 +39,10 @@ class Login extends Component {
         .then((snapshot)=>{
             if (snapshot.val() && Object.keys(snapshot.val()).length>0){
                 if (snapshot.val()[Object.keys(snapshot.val())].pwd===document.getElementById("pwd").value){
-                    this.props.setUser(document.getElementById("username").value,Object.keys(snapshot.val())[0]);
+                    const arLikes=!snapshot.val()[Object.keys(snapshot.val())].likes ? [] : Object.keys(snapshot.val()[Object.keys(snapshot.val())].likes).map((oLikeID)=>{
+                        return snapshot.val()[Object.keys(snapshot.val())].likes[oLikeID].itemID;
+                    });
+                    this.props.setUser(document.getElementById("username").value,Object.keys(snapshot.val())[0],arLikes);
                     this.props.switchToMain();
                 }
                 else{
@@ -78,7 +81,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setUser:(name,id)=>dispatch(setUser(name,id)),
+        setUser:(name,id,likes)=>dispatch(setUser(name,id,likes)),
     }
 }
 
